@@ -1,181 +1,186 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
 import 'package:notes_app/core/utils/colors.dart';
+import 'package:notes_app/core/utils/style.dart';
+import 'package:notes_app/feature/add_task/widget/text_form_filed.dart';
 
 class AddTaskScreen extends StatefulWidget {
+  const AddTaskScreen({super.key});
+
   @override
-  _AddTaskScreenState createState() => _AddTaskScreenState();
+  State<AddTaskScreen> createState() => _AddTaskScreenState();
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
-  DateTime _selectedDate = DateTime.now();
-  TimeOfDay _startTime = TimeOfDay(hour: 2, minute: 30);
-  TimeOfDay _endTime = TimeOfDay(hour: 2, minute: 45);
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController noteController = TextEditingController();
+
+  DateTime? selectedDate;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
   int _selectedColorIndex = 0;
+  List<Color> colorOptions = [AppColors.primaryColor, Colors.cyan, Colors.orange];
 
-  List<Color> colorOptions = [Colors.blue, Colors.red, Colors.orange];
-
-  void _pickDate() async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    }
-  }
-
-  void _pickTime({required bool isStartTime}) async {
-    TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: isStartTime ? _startTime : _endTime,
-    );
-    if (pickedTime != null) {
-      setState(() {
-        if (isStartTime) {
-          _startTime = pickedTime;
-        } else {
-          _endTime = pickedTime;
-        }
-      });
-    }
-  }
-
-  void _createTask() {
-    if (_titleController.text.isNotEmpty) {
-      print("Task Created: ${_titleController.text}, Date: ${DateFormat.yMd().format(_selectedDate)}");
-      Navigator.pop(context); // الرجوع للشاشة السابقة
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter a title!")));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Add Task")),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "Add Task",
+          style: AppTextStyle.fontStyle20Bold.copyWith(
+            color: Colors.black,
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Title", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              TextField(controller: _titleController, decoration: InputDecoration(border: OutlineInputBorder())),
-        
-              SizedBox(height: 10),
-        
-              Text("Note", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              TextField(controller: _noteController, decoration: InputDecoration(border: OutlineInputBorder())),
-        
-              SizedBox(height: 10),
-        
-              Text("Date", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              GestureDetector(
-                onTap: _pickDate,
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                  decoration: BoxDecoration(border: Border.all(), borderRadius: BorderRadius.circular(8)),
-                  child: Text(DateFormat.yMd().format(_selectedDate)),
+        child: Form(
+          key: formKey,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormFieldWithTitle(
+                  title: "Title",
+                  hintText: "Enter title",
+                  controller: titleController,
                 ),
-              ),
-        
-              SizedBox(height: 10),
-        
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Start Time", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        GestureDetector(
-                          onTap: () => _pickTime(isStartTime: true),
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                            decoration: BoxDecoration(border: Border.all(), borderRadius: BorderRadius.circular(8)),
-                            child: Text(_startTime.format(context)),
+                TextFormFieldWithTitle(
+                  title: "Note",
+                  hintText: "Enter Note",
+                  controller: noteController,
+    validator: (value) {
+    if (value == null || value.isEmpty) {
+    return "Note cannot be empty";}}
+
+                ),
+                TextFormFieldWithTitle(
+                  title: "Date",
+                  hintText: selectedDate != null
+                      ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
+                      : "Select Date",
+                  readOnly: true,
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2027),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        selectedDate = pickedDate;
+                      });
+                    }
+                  },
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          TextFormFieldWithTitle(
+                            readOnly: true,
+                            title: "Start Time",
+                            hintText: startTime != null
+                                ? startTime!.format(context)
+                                : "Select Time",
+                            onTap: () async {
+                              TimeOfDay? pickedTime = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                              );
+                              if (pickedTime != null) {
+                                setState(() {
+                                  startTime = pickedTime;
+                                });
+                              }
+                            },
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 7,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("End Time", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        GestureDetector(
-                          onTap: () => _pickTime(isStartTime: false),
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                            decoration: BoxDecoration(border: Border.all(), borderRadius: BorderRadius.circular(8)),
-                            child: Text(_endTime.format(context)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-        
-              SizedBox(height: 10),
-        
-              Text("Color", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              Row(
-                children: List.generate(
-                  colorOptions.length,
-                      (index) => GestureDetector(
-                    onTap: () => setState(() => _selectedColorIndex = index),
-                    child: Container(
-                      margin: EdgeInsets.all(5),
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: colorOptions[index],
-                        shape: BoxShape.circle,
-                        border: Border.all(color: _selectedColorIndex == index ? Colors.black : Colors.transparent, width: 2),
+                        ],
                       ),
                     ),
-                  ),
+                    SizedBox(width: 7),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          TextFormFieldWithTitle(
+                            readOnly: true,
+                            title: "End Time",
+                            hintText: endTime != null
+                                ? endTime!.format(context)
+                                : "Select Time",
+                            onTap: () async {
+                              TimeOfDay? pickedTime = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                              );
+                              if (pickedTime != null) {
+                                setState(() {
+                                  endTime = pickedTime;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-        
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Center(
-                child: SizedBox(
-                  width: 160,
+                SizedBox(
+                  height: 9,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Color", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    SizedBox(
+                      height: 6,
+                    ),
+                    Row(
+                      children: List.generate(
+                        colorOptions.length,
+                            (index) => GestureDetector(
+                          onTap: () => setState(() => _selectedColorIndex = index),
+                          child: Container(
+                            margin: EdgeInsets.all(5),
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: colorOptions[index],
+                              shape: BoxShape.circle,
+                              border: Border.all(color: _selectedColorIndex == index ? Colors.black : Colors.transparent, width: 2),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    ),
+                  ],
+                )
+             ,
+                SizedBox(height: 20),
+                Container(
+                  width: 200,
                   height: 50,
                   child: ElevatedButton(
-                   style:ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor, // لون الخلفية
-                        foregroundColor: Colors.white
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+
+
                     ),
-                    onPressed: (){},
-                    child: Text("Create Task",
-                    style: TextStyle(
-                    ),),
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+
+                      }
+                    },
+                    child: Text("Save Task",
+                    style:TextStyle(color: Colors.white,fontSize: 20),
                   ),
-                ),
-              ),
-        
-            ],
+                ),)
+              ],
+            ),
           ),
         ),
       ),
