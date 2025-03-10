@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app/core/utils/colors.dart';
 import 'package:notes_app/core/utils/style.dart';
+import 'package:notes_app/feature/add_task/widget/custom_batton.dart';
 import 'package:notes_app/feature/add_task/widget/text_form_filed.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -11,9 +12,14 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController noteController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+   TextEditingController titleController = TextEditingController();
+   TextEditingController noteController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+  TextEditingController startTimeController = TextEditingController();
+  TextEditingController endTimeController = TextEditingController();
+
+
 
   DateTime? selectedDate;
   TimeOfDay? startTime;
@@ -36,7 +42,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       ),
       body: SingleChildScrollView(
         child: Form(
-          key: formKey,
+          key: formKey, //عشان ال validator
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Column(
@@ -46,17 +52,27 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   title: "Title",
                   hintText: "Enter title",
                   controller: titleController,
+                  validator: (value){
+                    if (value == null ||value.isEmpty){
+                      return " This title is required";
+                    }
+                  },
                 ),
                 TextFormFieldWithTitle(
                   title: "Note",
                   hintText: "Enter Note",
                   controller: noteController,
-    validator: (value) {
-    if (value == null || value.isEmpty) {
-    return "Note cannot be empty";}}
+                  validator: (value){
+                    if (value == null ||value.isEmpty){
+                      return " This note is required";
+                    }
+                  },
+
 
                 ),
                 TextFormFieldWithTitle(
+
+                  controller: dateController,
                   title: "Date",
                   hintText: selectedDate != null
                       ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
@@ -71,8 +87,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     if (pickedDate != null) {
                       setState(() {
                         selectedDate = pickedDate;
+                        dateController.text = "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"; // ⬅️ تحديث الحقل
+
                       });
+                      formKey.currentState!.validate();
+
                     }
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
                   },
                 ),
                 Row(
@@ -81,6 +107,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       child: Column(
                         children: [
                           TextFormFieldWithTitle(
+                            onChanged: (value){
+                              setState(() {
+
+                              });
+                            },
+                            controller: startTimeController,
                             readOnly: true,
                             title: "Start Time",
                             hintText: startTime != null
@@ -95,8 +127,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 setState(() {
                                   startTime = pickedTime;
                                 });
+
                               }
                             },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+
+
                           ),
                         ],
                       ),
@@ -106,6 +147,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       child: Column(
                         children: [
                           TextFormFieldWithTitle(
+
+                            onChanged: (value){
+                              setState(() {
+
+                              });
+                            },
+                            controller: endTimeController,
                             readOnly: true,
                             title: "End Time",
                             hintText: endTime != null
@@ -120,7 +168,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 setState(() {
                                   endTime = pickedTime;
                                 });
+
                               }
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
                             },
                           ),
                         ],
@@ -164,21 +219,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 Container(
                   width: 200,
                   height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-
-
-                    ),
-                    onPressed: () {
+                  child:CustomButton(
+                    title: "Create Task",
+                    onTap: (){
                       if (formKey.currentState!.validate()) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Processing Data')),);
+    }
+    },
 
-                      }
-                    },
-                    child: Text("Save Task",
-                    style:TextStyle(color: Colors.white,fontSize: 20),
-                  ),
-                ),)
+                  ))
               ],
             ),
           ),

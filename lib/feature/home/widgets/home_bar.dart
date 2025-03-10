@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_app/feature/profile/profile_screen.dart';
 
 import '../../../core/utils/colors.dart';
 import '../../../core/utils/style.dart';
@@ -34,22 +35,30 @@ class HomeBar extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Container(
-                  width: 80,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.indigo,
-
-                  ),
+                InkWell(
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfileScreen()),
+                    );
+                    },
                   child: Container(
-                    width: 50,
-                    height: 50,
+                    width: 80,
+                    height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color:Colors.indigo,
-                      image: DecorationImage(fit: BoxFit.contain,
-                          image: Image.network("https://i.pinimg.com/736x/45/96/64/45966438cde0f80525ab77e7170e7647.jpg").image),
+                      color: Colors.indigo,
+
+                    ),
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:Colors.indigo,
+                        image: DecorationImage(fit: BoxFit.contain,
+                            image: Image.network("https://i.pinimg.com/736x/45/96/64/45966438cde0f80525ab77e7170e7647.jpg").image),
+                      ),
                     ),
                   ),
                 ),

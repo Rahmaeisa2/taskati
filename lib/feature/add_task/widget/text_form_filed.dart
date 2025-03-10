@@ -6,29 +6,27 @@ import '../../../core/utils/style.dart';
 
 
 class TextFormFieldWithTitle extends StatelessWidget {
-  final String title;
-  final String hintText;
+  final String? title;
+  final String? hintText;
   final Widget? suffixIcon;
   final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   final bool readOnly;
-  final String? Function(String?)? validator;
   final void Function()? onTap;
-  const TextFormFieldWithTitle({super.key, required this.title, required this.hintText, this.suffixIcon,  this.readOnly=false, this.onTap, this.controller, this.validator,});
+  final void Function(String)? onChanged;
+  const TextFormFieldWithTitle({super.key,  this.title,  this.hintText, this.suffixIcon,  this.readOnly=false, this.onTap, this.controller, this.onChanged, this.validator,});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title,style: AppTextStyle.fontStyle20Bold,),
+        Text(title ??" ",style: AppTextStyle.fontStyle20Bold,),
         SizedBox(height: 10,),
         TextFormField(
-          validator: (value){
-            if (value == null){
-              debugPrint("This field is required");
-            }
-          },
+          validator: validator,
+          onChanged:onChanged ,
           onTap:onTap ,
           readOnly: readOnly,
           decoration: InputDecoration(

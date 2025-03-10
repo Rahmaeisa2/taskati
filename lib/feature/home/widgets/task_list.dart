@@ -96,8 +96,3 @@ class _TasksListViewState extends State<TasksListView> {
     );
   }
 }
-List<Color> colors = [
-  AppColors.primaryColor,
-  Colors.pink,
-  Colors.lightBlueAccent,
-];
