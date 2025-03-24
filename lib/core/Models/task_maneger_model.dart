@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:notes_app/core/Models/task_model.dart';
 
 class TaskManager extends ChangeNotifier{
+
   TaskManager._(){
     LoadTaskList();
   }
@@ -23,9 +24,12 @@ class TaskManager extends ChangeNotifier{
     notifyListeners();
   }
   void removeTask(index){
+
     tasksList.removeAt(index);
     Hive.box<TaskModel>("tasks").deleteAt(index);
     notifyListeners();
-
+    if (tasksList.isNotEmpty && tasksList[0] == "Default Task") {
+      tasksList.removeAt(0);
+    }
   }
 }

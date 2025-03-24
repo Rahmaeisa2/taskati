@@ -37,7 +37,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
   pickFromGallery()async{
-    await picker.pickImage(source: ImageSource.gallery);
+    final galleryPicker =await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      image = galleryPicker;
+    });
 
   }
   void updateName() async {
@@ -136,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color:Colors.indigo,
-                          image: DecorationImage(fit: BoxFit.cover,
+                          image: DecorationImage(fit: BoxFit.fill,
                               image: Image.file(File(image?.path??" ")).image),
                         ),
                         child: image == null

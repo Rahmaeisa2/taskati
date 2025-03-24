@@ -72,6 +72,7 @@ class _TasksListViewState extends State<TasksListView> {
                       TaskManager.manager.removeTask(index);
 
                     }
+                    
                   } ,
                   child: TaskItem(
                     task: TaskManager.manager.tasksList[index],

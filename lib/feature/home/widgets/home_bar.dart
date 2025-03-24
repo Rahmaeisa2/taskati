@@ -7,7 +7,9 @@ import '../../../core/utils/style.dart';
 import '../../../core/utils/text.dart';
 
 class HomeBar extends StatelessWidget {
-  const HomeBar({super.key});
+   HomeBar({super.key});
+  String userName = "Rahma Eisa";
+
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class HomeBar extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(AppText.yourName,style:
+                  Text(userName,style:
                     AppTextStyle.fontStyle20Bold.copyWith(
                         color:AppColors.primaryColor
                     ),),

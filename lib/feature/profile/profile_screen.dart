@@ -27,8 +27,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
   pickFromGallery()async{
-    await picker.pickImage(source: ImageSource.gallery);
-
+    final pickedImage =await picker.pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      setState(() {
+        image = pickedImage;
+      });
+    }
   }
 
 
@@ -105,15 +109,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     children: [
                                       CustomButton(title: "Upload from camera", onTap: ()async{
                                         await pickFromCamera();
+                                        Navigator.pop(context);
+                                        setState(() {
 
-                                      }),
+                                        });
+                                      },),
                                       SizedBox(
                                         height: 8,
                                       ),
-                                      CustomButton(title: "Upload from gallery", onTap: ()async {
+                                      CustomButton(title: "Upload from gallery", onTap: ()async{
                                         await pickFromGallery();
+                                        Navigator.pop(context);
+                                        setState(() {
 
-                                      }),
+                                        });
+                                      },),
 
                                     ],
                                   ),
@@ -133,9 +143,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color:Colors.indigo,
-                          image: DecorationImage(fit: BoxFit.contain,
-                              image: Image.file(File(image?.path??" ")).image),
-                        ),
+                          image: DecorationImage(fit: BoxFit.cover,
+
+                             image:  image != null
+                                  ? FileImage(File(image!.path))
+                                  : AssetImage("https://i.pinimg.com/736x/45/96/64/45966438cde0f80525ab77e7170e7647.jpg") as ImageProvider,
+                            ),                        ),
                         child: image == null
                             ? Icon(Icons.camera_alt, color: Colors.white, size: 18)
                             : null,
