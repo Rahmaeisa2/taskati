@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/utils/style.dart';
-import '../data/task.dart';
+import '../../../core/Models/task_model.dart';
 
 class TaskItem extends StatelessWidget {
-  final Task task;
+  final TaskModel task;
 
   const TaskItem({super.key, required this.task});
 
@@ -15,7 +15,7 @@ class TaskItem extends StatelessWidget {
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: task.color,
+        color: Color(task.color),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -37,7 +37,7 @@ class TaskItem extends StatelessWidget {
                     Icon(Icons.access_time, color: Colors.white),
                     SizedBox(width: 10),
                     Text(
-                      "${task.startTime.format(context)} - ${task.endTime.format(context)}",
+                      "${task.startTime} - ${task.endTime}",
                       style: AppTextStyle.fontStyle13Grey.copyWith(color: Colors.white),
                     ),
                   ],
@@ -54,7 +54,7 @@ class TaskItem extends StatelessWidget {
           SizedBox(width: 10),
           RotatedBox(
             quarterTurns: 3,
-            child: Text("To Do", style: AppTextStyle.fontStyle17White),
+            child: Text(task.isComplated?"Complated" : "TO DO", style: AppTextStyle.fontStyle17White),
           ),
         ],
       ),

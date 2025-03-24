@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notes_app/core/utils/colors.dart';
 
 import '../../../core/utils/style.dart';
 
@@ -39,7 +40,7 @@ class DayContainer extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: BoxDecoration(
-        color: isActive ? Colors.indigo : Colors.transparent,
+        color: isActive ? AppColors.primaryColor : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(

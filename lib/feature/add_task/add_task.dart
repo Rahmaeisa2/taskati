@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:notes_app/core/utils/colors.dart';
-import 'package:notes_app/core/utils/style.dart';
-import 'package:notes_app/feature/add_task/widget/custom_batton.dart';
+import 'package:notes_app/feature/add_task/widget/color_picker.dart';
 import 'package:notes_app/feature/add_task/widget/text_form_filed.dart';
+
+import '../../core/Models/task_maneger_model.dart';
+import '../../core/Models/task_model.dart';
+
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -12,223 +17,125 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  final formKey = GlobalKey<FormState>();
-   TextEditingController titleController = TextEditingController();
-   TextEditingController noteController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  TextEditingController titleController = TextEditingController();
+  TextEditingController noteController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController startTimeController = TextEditingController();
   TextEditingController endTimeController = TextEditingController();
 
 
+  int selectedIndexColor = -1;
+  List<Color> availableColors = [AppColors.primaryColor, Colors.orange.shade500, Colors.pinkAccent];
+  DateTime selectedDate = DateTime.now();
 
-  DateTime? selectedDate;
-  TimeOfDay? startTime;
-  TimeOfDay? endTime;
-  int _selectedColorIndex = 0;
-  List<Color> colorOptions = [AppColors.primaryColor, Colors.cyan, Colors.orange];
 
+
+
+
+  void _pickDate() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2030),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        dateController.text = DateFormat("MM/dd/yyyy").format(selectedDate);
+      });
+    }
+  }
+
+  void _pickTime(TextEditingController controller) async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (pickedTime != null) {
+      setState(() {
+        controller.text = pickedTime.format(context);
+      });
+    }
+  }
+
+  void _createTask() {
+    if (_formKey.currentState!.validate()) {
+      if (selectedIndexColor == -1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please select a color!", style: TextStyle(color: Colors.red))),
+        );
+      } else {
+        setState(() {
+          TaskManager.manager.addTask(TaskModel(title: titleController.text,
+              note: noteController.text,
+              date:dateController.text,
+              startTime: startTimeController.text,
+              endTime: endTimeController.text,
+              color: availableColors[selectedIndexColor].value));
+
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Task Created Successfully! ")),
+        );
+        Navigator.pop(context);
+
+
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          "Add Task",
-          style: AppTextStyle.fontStyle20Bold.copyWith(
-            color: Colors.black,
-          ),
-        ),
+        title: const Text("Add Task", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.black), onPressed: () => Navigator.pop(context)),
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 12
+        ),
         child: Form(
-          key: formKey, //عشان ال validator
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          key: _formKey,
+          child: SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextFormFieldWithTitle(
-                  title: "Title",
-                  hintText: "Enter title",
-                  controller: titleController,
-                  validator: (value){
-                    if (value == null ||value.isEmpty){
-                      return " This title is required";
-                    }
-                  },
-                ),
-                TextFormFieldWithTitle(
-                  title: "Note",
-                  hintText: "Enter Note",
-                  controller: noteController,
-                  validator: (value){
-                    if (value == null ||value.isEmpty){
-                      return " This note is required";
-                    }
-                  },
-
-
-                ),
-                TextFormFieldWithTitle(
-
-                  controller: dateController,
-                  title: "Date",
-                  hintText: selectedDate != null
-                      ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
-                      : "Select Date",
-                  readOnly: true,
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2027),
-                    );
-                    if (pickedDate != null) {
-                      setState(() {
-                        selectedDate = pickedDate;
-                        dateController.text = "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"; // ⬅️ تحديث الحقل
-
-                      });
-                      formKey.currentState!.validate();
-
-                    }
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
-                ),
+                CustomTextField(controller: titleController, label: "Title", hint: "Enter title here"),
+                SizedBox(height: 8,),
+                CustomTextField(controller: noteController, label: "Note", hint: "Enter note here"),
+                SizedBox(height: 8,),
+            
+                CustomTextField(controller: dateController, label: "Date", hint: "Select Date", readOnly: true, onTap: _pickDate, suffixIcon: Icons.calendar_today),
+            
                 Row(
                   children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          TextFormFieldWithTitle(
-                            onChanged: (value){
-                              setState(() {
-
-                              });
-                            },
-                            controller: startTimeController,
-                            readOnly: true,
-                            title: "Start Time",
-                            hintText: startTime != null
-                                ? startTime!.format(context)
-                                : "Select Time",
-                            onTap: () async {
-                              TimeOfDay? pickedTime = await showTimePicker(
-                                context: context,
-                                initialTime: TimeOfDay.now(),
-                              );
-                              if (pickedTime != null) {
-                                setState(() {
-                                  startTime = pickedTime;
-                                });
-
-                              }
-                            },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-
-
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 7),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          TextFormFieldWithTitle(
-
-                            onChanged: (value){
-                              setState(() {
-
-                              });
-                            },
-                            controller: endTimeController,
-                            readOnly: true,
-                            title: "End Time",
-                            hintText: endTime != null
-                                ? endTime!.format(context)
-                                : "Select Time",
-                            onTap: () async {
-                              TimeOfDay? pickedTime = await showTimePicker(
-                                context: context,
-                                initialTime: TimeOfDay.now(),
-                              );
-                              if (pickedTime != null) {
-                                setState(() {
-                                  endTime = pickedTime;
-                                });
-
-                              }
-                            },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                    Expanded(child: CustomTextField(controller: startTimeController, label: "Start Time", hint: "Select Time", readOnly: true, onTap: () => _pickTime(startTimeController), suffixIcon: Icons.access_time)),
+                    const SizedBox(width: 10),
+                    Expanded(child: CustomTextField(controller: endTimeController, label: "End Time", hint: "Select Time", readOnly: true, onTap: () => _pickTime(endTimeController), suffixIcon: Icons.access_time)),
                   ],
                 ),
-                SizedBox(
-                  height: 9,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Color", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    SizedBox(
-                      height: 6,
+            
+                const Text("Color", style: TextStyle(fontWeight: FontWeight.bold)),
+                ColorPicker(availableColors: availableColors, selectedIndex: selectedIndexColor, onSelect: (index) => setState(() => selectedIndexColor = index)),
+            
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+            
+                      backgroundColor: AppColors.primaryColor,
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                     ),
-                    Row(
-                      children: List.generate(
-                        colorOptions.length,
-                            (index) => GestureDetector(
-                          onTap: () => setState(() => _selectedColorIndex = index),
-                          child: Container(
-                            margin: EdgeInsets.all(5),
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: colorOptions[index],
-                              shape: BoxShape.circle,
-                              border: Border.all(color: _selectedColorIndex == index ? Colors.black : Colors.transparent, width: 2),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                    ),
-                  ],
-                )
-             ,
-                SizedBox(height: 20),
-                Container(
-                  width: 200,
-                  height: 50,
-                  child:CustomButton(
-                    title: "Create Task",
-                    onTap: (){
-                      if (formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Processing Data')),);
-    }
-    },
-
-                  ))
+                    onPressed: _createTask,
+                    child: const Text("Create Task" ,
+                        style: TextStyle(color: Colors.white),
+                  ),
+                ),)
               ],
             ),
           ),

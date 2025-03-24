@@ -1,50 +1,60 @@
 import 'package:flutter/material.dart';
 
-
 import '../../../core/utils/colors.dart';
-import '../../../core/utils/style.dart';
 
-
-class TextFormFieldWithTitle extends StatelessWidget {
-  final String? title;
-  final String? hintText;
-  final Widget? suffixIcon;
-  final TextEditingController? controller;
-  final String? Function(String?)? validator;
-
+class CustomTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final String hint;
   final bool readOnly;
-  final void Function()? onTap;
-  final void Function(String)? onChanged;
-  const TextFormFieldWithTitle({super.key,  this.title,  this.hintText, this.suffixIcon,  this.readOnly=false, this.onTap, this.controller, this.onChanged, this.validator,});
+  final VoidCallback? onTap;
+  final IconData? suffixIcon;
+
+  const CustomTextField({
+    super.key,
+    required this.controller,
+    required this.label,
+    required this.hint,
+    this.readOnly = false,
+    this.onTap,
+    this.suffixIcon,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title ??" ",style: AppTextStyle.fontStyle20Bold,),
-        SizedBox(height: 10,),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold ,
+        fontSize: 16)),
+        SizedBox(
+          height: 12,
+        ),
         TextFormField(
-          validator: validator,
-          onChanged:onChanged ,
-          onTap:onTap ,
+          controller: controller,
           readOnly: readOnly,
           decoration: InputDecoration(
-              hintText: hintText,
-              suffixIcon:suffixIcon ,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primaryColor)
-              )
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10)
+              
+            ),
+            hintText: hint,
+            suffixIcon: suffixIcon != null
+                ? IconButton(icon: Icon(suffixIcon), onPressed: onTap)
+                : null,
+            focusedBorder:OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppColors.primaryColor)
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+
+            ),
           ),
+          validator: (value) => value!.isEmpty ? "$label is required" : null,
+          onTap: onTap,
         ),
-        SizedBox(height: 15,),
+        const SizedBox(height: 10),
       ],
     );
   }

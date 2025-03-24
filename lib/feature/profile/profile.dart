@@ -136,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color:Colors.indigo,
-                          image: DecorationImage(fit: BoxFit.contain,
+                          image: DecorationImage(fit: BoxFit.cover,
                               image: Image.file(File(image?.path??" ")).image),
                         ),
                         child: image == null

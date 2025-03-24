@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 
+import 'core/Models/task_model.dart';
 import 'feature/splash/splash_screen.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
+void main() async{
+
+ await Hive.initFlutter();
+  Hive.registerAdapter(TaskModelAdapter( ));
+  await Hive.openBox<TaskModel>("tasks");
   runApp(const MyApp());
 }
 

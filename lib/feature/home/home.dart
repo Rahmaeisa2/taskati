@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app/feature/home/widgets/add_and_date_btn.dart';
-import 'package:notes_app/feature/home/widgets/date_container.dart';
+import 'package:notes_app/feature/home/widgets/day_container.dart';
+import 'package:notes_app/feature/home/widgets/filter_day.dart';
 import 'package:notes_app/feature/home/widgets/empty_task.dart';
 import 'package:notes_app/feature/home/widgets/home_bar.dart';
 import 'package:notes_app/feature/home/widgets/task_list.dart';
 
-import '../add_task/add_task.dart';
-import 'data/task.dart';
+
+
 
 
 class HomeScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                TasksListView(tasks: defaultTasks),
+                TasksListView(),
               ],
             ),
           ),
