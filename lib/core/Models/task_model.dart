@@ -23,7 +23,7 @@ class TaskModel extends HiveObject{
   int color;
 
   @HiveField(6)
-  bool isComplated;
+  bool isCompleted;
 
   TaskModel({
     required this.title,
@@ -32,6 +32,6 @@ class TaskModel extends HiveObject{
     required this.startTime,
     required this.endTime,
     required this.color,
-    this.isComplated = false,
+    this.isCompleted = false,
   });
 }

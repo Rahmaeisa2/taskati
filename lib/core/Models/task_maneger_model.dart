@@ -17,19 +17,26 @@ class TaskManager extends ChangeNotifier{
     tasksList =  Hive.box<TaskModel>("tasks").values.toList();
   }
 
+
   void addTask(TaskModel task){
     tasksList.add(task);
     Hive.box<TaskModel>("tasks").add(task);
 
     notifyListeners();
+
   }
   void removeTask(index){
 
     tasksList.removeAt(index);
     Hive.box<TaskModel>("tasks").deleteAt(index);
     notifyListeners();
-    if (tasksList.isNotEmpty && tasksList[0] == "Default Task") {
-      tasksList.removeAt(0);
-    }
+   // if (tasksList.isNotEmpty && tasksList[0] == "Default Task") {
+   //   tasksList.removeAt(0);
+  //  }
   }
-}
+  void complateTask(index){
+    tasksList.remove(index);
+    Hive.box<TaskModel>("tasks").deleteAt(index);
+
+  }
+  }

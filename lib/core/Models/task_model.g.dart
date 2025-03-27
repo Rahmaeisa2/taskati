@@ -23,7 +23,7 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
       startTime: fields[3] as String,
       endTime: fields[4] as String,
       color: fields[5] as int,
-      isComplated: fields[6] as bool,
+      isCompleted: fields[6] as bool,
     );
   }
 
@@ -44,7 +44,7 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
       ..writeByte(5)
       ..write(obj.color)
       ..writeByte(6)
-      ..write(obj.isComplated);
+      ..write(obj.isCompleted);
   }
 
   @override

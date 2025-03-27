@@ -3,6 +3,7 @@ import 'package:notes_app/feature/home/widgets/task_item.dart';
 
 
 import '../../../core/Models/task_maneger_model.dart';
+import '../../../core/Models/task_model.dart';
 import '../../../core/utils/style.dart';
 
 
@@ -14,6 +15,9 @@ class TasksListView extends StatefulWidget {
 }
 
 class _TasksListViewState extends State<TasksListView> {
+  List<TaskModel> tasksList=[
+
+  ];
   @override
   Widget build(BuildContext context) {
 
@@ -68,8 +72,25 @@ class _TasksListViewState extends State<TasksListView> {
                   onDismissed:(direction){
                     if(direction==DismissDirection.startToEnd){
                       debugPrint("Completed");
-                    }else{
-                      TaskManager.manager.removeTask(index);
+
+                     // tasksList[index].isCompleted = true;
+                    //  TaskManager.manager.removeTask(index);
+                     // tasksList.removeAt(index);
+                    //  tasksList.removeAt(0);
+                      setState(() {
+                        TaskManager.manager.removeTask(index);
+
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                         SnackBar(content: Text("Task Marked as Completed ✅")),
+                       );
+
+                    }else{ setState(() {
+                        TaskManager.manager.removeTask(index);
+                        tasksList.removeAt(0);
+
+
+                    });
 
                     }
                     

@@ -54,7 +54,7 @@ class TaskItem extends StatelessWidget {
           SizedBox(width: 10),
           RotatedBox(
             quarterTurns: 3,
-            child: Text(task.isComplated?"Complated" : "TO DO", style: AppTextStyle.fontStyle17White),
+            child: Text(task.isCompleted?"Complated" : "TO DO", style: AppTextStyle.fontStyle17White),
           ),
         ],
       ),
